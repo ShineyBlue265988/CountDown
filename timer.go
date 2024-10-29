@@ -1,21 +1,24 @@
 package main
 
 import (
-	"flag"
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 )
 
 func main() {
 	println("Starting timer...", time.Now().Format(time.RFC3339))
-	deadline := flag.String("deadline", "", "The deadline for the countdown timer in RFC3339 format (e.g. 2019-12-25T15:00:00+01:00)")
-	flag.Parse()
-	if *deadline == "" {
-		flag.PrintDefaults()
+	println("Enter deadline in RFC3339 format (e.g. 2019-12-25T15:00:00+01:00):")
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	deadline := strings.TrimSpace(input)
+	if deadline == "" {
+		fmt.Println("Deadline cannot be empty")
 		os.Exit(1)
 	}
-	v, err := time.Parse(time.RFC3339, *deadline)
+	v, err := time.Parse(time.RFC3339, deadline)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
