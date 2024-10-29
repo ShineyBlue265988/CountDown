@@ -10,19 +10,21 @@ import (
 
 func main() {
 	println("Starting timer...", time.Now().Format(time.RFC3339))
-	println("Enter deadline in RFC3339 format (e.g. 2019-12-25T15:00:00+01:00):")
+	println("Enter countdown time in format 'HH:MM:SS' (example: 01:30:00 for 1 hour 30 minutes):")
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
-	deadline := strings.TrimSpace(input)
-	if deadline == "" {
+	timeStr := strings.TrimSpace(input)
+	if timeStr == "" {
 		fmt.Println("Deadline cannot be empty")
 		os.Exit(1)
 	}
-	v, err := time.Parse(time.RFC3339, deadline)
+	var hours, minutes, seconds int
+	_, err := fmt.Sscanf(timeStr, "%d:%d:%d", &hours, &minutes, &seconds)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Invalid time format")
 		os.Exit(1)
 	}
+	v := time.Now().Add(time.Duration(hours)*time.Hour + time.Duration(minutes)*time.Minute + time.Duration(seconds)*time.Second)
 	for range time.Tick(1 * time.Second) {
 		timeRemaining := getTimeRemaining(v)
 		if timeRemaining.t <= 0 {
